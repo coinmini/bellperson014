@@ -326,17 +326,17 @@ where
     pool.scoped(|scoped| {
         let params = &params;
         let provers = &mut provers;
-        h_params
+        // h_params
         scoped.execute(move || {
             let h_params = params.get_h(0).unwrap();
             tx_h.send(h_params).unwrap();
         });
-        l_params
+        // l_params
         scoped.execute(move || {
             let l_params = params.get_l(0).unwrap();
             tx_l.send(l_params).unwrap();
         });
-        a_params
+        // a_params
         scoped.execute(move || {
             let (a_inputs_source, a_aux_source) = params.get_a(input_assignment_len,0).unwrap();
             tx_a.send((a_inputs_source, a_aux_source)).unwrap();
