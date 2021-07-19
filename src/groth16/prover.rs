@@ -473,7 +473,7 @@ where
             let l = multiexp_fulldensity(
                 &worker,
                 l_params.clone(), // params.get_l(aux_assignment.len())?,
-                params.get_l(aux_assignment.len())?,
+                // params.get_l(aux_assignment.len())?,
 
                 FullDensity,
                 aux_assignment.clone(),
