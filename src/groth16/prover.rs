@@ -315,28 +315,28 @@ where
     // get params
     info!("ZQ: get params start");
     let now = Instant::now();
-    // let (tx_h, rx_h) = mpsc::channel();
-    // let (tx_l, rx_l) = mpsc::channel();
+    let (tx_h, rx_h) = mpsc::channel();
+    let (tx_l, rx_l) = mpsc::channel();
     let (tx_a, rx_a) = mpsc::channel();
     let (tx_bg1, rx_bg1) = mpsc::channel();
     let (tx_bg2, rx_bg2) = mpsc::channel();
     let (tx_assignments, rx_assignments) = mpsc::channel();
     let input_assignment_len = provers[0].input_assignment.len();
-    let mut pool = Pool::new(4);
+    let mut pool = Pool::new(6);
     pool.scoped(|scoped| {
         let params = &params;
         let provers = &mut provers;
-        // h_params
-        // scoped.execute(move || {
-        //     let h_params = params.get_h(0).unwrap();
-        //     tx_h.send(h_params).unwrap();
-        // });
-        // l_params
-        // scoped.execute(move || {
-        //     let l_params = params.get_l(0).unwrap();
-        //     tx_l.send(l_params).unwrap();
-        // });
-        // a_params
+        h_params
+        scoped.execute(move || {
+            let h_params = params.get_h(0).unwrap();
+            tx_h.send(h_params).unwrap();
+        });
+        l_params
+        scoped.execute(move || {
+            let l_params = params.get_l(0).unwrap();
+            tx_l.send(l_params).unwrap();
+        });
+        a_params
         scoped.execute(move || {
             let (a_inputs_source, a_aux_source) = params.get_a(input_assignment_len,0).unwrap();
             tx_a.send((a_inputs_source, a_aux_source)).unwrap();
@@ -378,8 +378,8 @@ where
     });
     // waiting params
     info!("ZQ: waiting params...");
-    // let h_params = rx_h.recv().unwrap();
-    // let l_params = rx_l.recv().unwrap();
+    let h_params = rx_h.recv().unwrap();
+    let l_params = rx_l.recv().unwrap();
     let (a_inputs_source, a_aux_source) = rx_a.recv().unwrap();
     let (b_g1_inputs_source, b_g1_aux_source) = rx_bg1.recv().unwrap();
     let (b_g2_inputs_source, b_g2_aux_source) = rx_bg2.recv().unwrap();
@@ -448,8 +448,8 @@ where
             // let h = multiexp(
             let h = multiexp_fulldensity(
                 &worker,
-                // h_params.clone(), // params.get_h(a.len())?,
-                params.get_h(a.len())?,
+                h_params.clone(), // params.get_h(a.len())?,
+                // params.get_h(a.len())?,
 
                 FullDensity,
                 a,
@@ -472,7 +472,7 @@ where
             // let l = multiexp(
             let l = multiexp_fulldensity(
                 &worker,
-                // l_params.clone(), // params.get_l(aux_assignment.len())?,
+                l_params.clone(), // params.get_l(aux_assignment.len())?,
                 params.get_l(aux_assignment.len())?,
 
                 FullDensity,
