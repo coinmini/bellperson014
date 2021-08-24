@@ -118,7 +118,7 @@ where
         // let max_n = calc_chunk_size::<E>(mem, core_count);
         // let best_n = calc_best_chunk_size(MAX_WINDOW_SIZE, core_count, exp_bits);
         // let n = std::cmp::min(max_n, best_n);
-        let n = 568; // Not used
+        let n = 67108864; // Not used
 
         Ok(SingleMultiexpKernel {
             program: opencl::Program::from_opencl(d, &src)?,
@@ -147,9 +147,9 @@ where
         let exp_bits = exp_size::<E>() * 8;
         // let window_size = calc_window_size(n as usize, exp_bits, self.core_count);
         let window_size = jack_windows_size;
-        let num_windows = ((exp_bits as f64) / (window_size as f64)).ceil() as usize;
+        let num_windows = ((exp_bits as f64) / (jack_windows_size as f64)).ceil() as usize;
         let num_groups = calc_num_groups(self.core_count, num_windows);
-        let bucket_len = 1 << window_size;
+        let bucket_len = 1 << jack_windows_size;
 
         info!("bucket_len is :{}",  bucket_len);
 
@@ -360,12 +360,12 @@ where
                         .map(|((bases, exps), kern)| -> Result<<G as CurveAffine>::Projective, GPUError> {
                             let mut acc = <G as CurveAffine>::Projective::zero();
                             // let jack_chunk_3080 = 33554466;
-                            let jack_chunk_3080 = 67108864;
+                            let jack_chunk_3090 = 67108864;
 
-                            let mut jack_windows_size = 11;
+                            let mut jack_windows_size = 12;
                             let size_result = std::mem::size_of::<<G as CurveAffine>::Projective>();
                             if size_result > 144 {
-                                jack_windows_size = 8;
+                                jack_windows_size = 10;
                             }
                             for (bases, exps) in bases.chunks(jack_chunk_3080).zip(exps.chunks(jack_chunk_3080)) {
                                 let result = kern.multiexp(bases, exps, bases.len(), jack_windows_size)?;
