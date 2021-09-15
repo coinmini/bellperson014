@@ -348,7 +348,7 @@ where
         // concurrent computing
         let (tx_gpu, rx_gpu) = mpsc::channel();
         let (tx_cpu, rx_cpu) = mpsc::channel();
-        let mut scoped_pool = Pool::new(4);
+        let mut scoped_pool = Pool::new(2);
         scoped_pool.scoped(|scoped| {
             // GPU
             scoped.execute(move || {
@@ -363,10 +363,10 @@ where
                             let jack_chunk_3090 = 67108864;
                             // let jack_chunk_3090 = 77108864;
 
-                            let mut jack_windows_size = 12;
+                            let mut jack_windows_size = 13;
                             let size_result = std::mem::size_of::<<G as CurveAffine>::Projective>();
                             if size_result > 144 {
-                                jack_windows_size = 10;
+                                jack_windows_size = 11;
                             }
                             for (bases, exps) in bases.chunks(jack_chunk_3090).zip(exps.chunks(jack_chunk_3090)) {
                                 let result = kern.multiexp(bases, exps, bases.len(), jack_windows_size)?;
