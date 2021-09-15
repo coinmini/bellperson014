@@ -360,8 +360,8 @@ where
                         .map(|((bases, exps), kern)| -> Result<<G as CurveAffine>::Projective, GPUError> {
                             let mut acc = <G as CurveAffine>::Projective::zero();
                             // let jack_chunk_3080 = 33554466;
-                            // let jack_chunk_3090 = 67108864;
-                            let jack_chunk_3090 = 77108864;
+                            let jack_chunk_3090 = 67108864;
+                            // let jack_chunk_3090 = 77108864;
 
                             let mut jack_windows_size = 12;
                             let size_result = std::mem::size_of::<<G as CurveAffine>::Projective>();
