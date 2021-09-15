@@ -347,8 +347,8 @@ where
 
         // concurrent computing
         let (tx_gpu, rx_gpu) = mpsc::channel();
-        // let (tx_cpu, rx_cpu) = mpsc::channel();
-        let mut scoped_pool = Pool::new(1);
+        let (tx_cpu, rx_cpu) = mpsc::channel();
+        let mut scoped_pool = Pool::new(4);
         scoped_pool.scoped(|scoped| {
             // GPU
             scoped.execute(move || {
